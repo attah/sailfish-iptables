@@ -1,9 +1,0 @@
-<package project="Mer:Trunk:Base" name="iptables">
-  <title>Tools for managing Linux kernel packet filtering capabilities</title>
-  <description>The iptables utility controls the network packet filtering code in the
-Linux kernel. If you need to set up firewalls and/or IP masquerading,
-you should install this package.
-
-</description>
-  <url>http://www.netfilter.org/</url>
-</package>
