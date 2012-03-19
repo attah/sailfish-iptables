@@ -1,13 +1,12 @@
 Name: iptables
 Summary: Tools for managing Linux kernel packet filtering capabilities
-Version: 1.4.10
-Release: 2
-Source: http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
+Version: 1.4.12.2
+Release: 1
+Source0: http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
 Source1: iptables-config
-Patch5: iptables-1.4.1.1-cloexec.patch
+Patch0: iptables-1.4.11-cloexec.patch
 Group: System/Base
 URL: http://www.netfilter.org/
-BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 License: GPLv2
 BuildRequires: kernel-headers
 Conflicts: kernel < 2.4.20
@@ -44,7 +43,7 @@ stable and may change with every new version. It is therefore unsupported.
 
 %prep
 %setup -q
-%patch5 -p1 -b .cloexec
+%patch0 -p1 -b .cloexec
 
 %build
 CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing" \
@@ -87,9 +86,6 @@ install -c -m 755 %{SOURCE1} %{buildroot}/etc/sysconfig/iptables-config
 sed -e 's;iptables;ip6tables;g' -e 's;IPTABLES;IP6TABLES;g' < %{SOURCE1} > ip6tables-config
 install -c -m 755 ip6tables-config %{buildroot}/etc/sysconfig/ip6tables-config
 
-%clean
-rm -rf $RPM_BUILD_ROOT 
-
 %post
 /sbin/ldconfig
 
@@ -100,7 +96,9 @@ rm -rf $RPM_BUILD_ROOT
 %doc COPYING INSTALL INCOMPATIBILITIES
 %config(noreplace) %attr(0600,root,root) /etc/sysconfig/iptables-config
 /sbin/iptables*
+/sbin/xtables-multi
 /bin/iptables-xml
+%{_mandir}/man1/iptables*
 %{_mandir}/man8/iptables*
 %dir /%{_lib}/xtables
 /%{_lib}/xtables/libipt*
@@ -132,5 +130,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libip*tc.so
 %{_libdir}/libipq.so
 %{_libdir}/libxtables.so
+%{_libdir}/pkgconfig/libipq.pc
 %{_libdir}/pkgconfig/libiptc.pc
+%{_libdir}/pkgconfig/libip4tc.pc
+%{_libdir}/pkgconfig/libip6tc.pc
 %{_libdir}/pkgconfig/xtables.pc

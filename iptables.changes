@@ -1,3 +1,6 @@
+* Mon Mar 19 2012 Marko Saukko <marko.saukko@gmail.com> - 1.4.12.2
+- MER#228: Update iptables to 1.4.12.2 version.
+
 * Mon May 02 2011 Chris Ferron <chris.e.ferron@linux.intel.com> - 1.4.10
 - FEA#16109 - [FEA] Implement SystemD as MeeGo init provide
 - As systemd is now the MeeGo init provider there is no need for chkconfig or init scripts
