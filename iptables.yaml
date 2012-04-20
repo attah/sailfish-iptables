@@ -1,0 +1,41 @@
+Name: iptables
+Summary: Tools for managing Linux kernel packet filtering capabilities
+Version: 1.4.13
+Release: 1
+Group: System/Base
+License: GPLv2
+URL: http://www.netfilter.org/
+Sources:
+    - http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
+    - iptables-config
+Description: |
+    The iptables utility controls the network packet filtering code in the
+    Linux kernel. If you need to set up firewalls and/or IP masquerading,
+    you should install this package.
+
+PkgBR:
+    - kernel-headers
+Configure: none
+Builder: make
+SubPackages:
+    - Name: devel
+      Summary: Development package for iptables
+      Group: System/Base
+      Description: |
+          iptables development headers and libraries.
+          
+          The iptc interface is upstream marked as not public. The interface is not 
+          stable and may change with every new version. It is therefore unsupported.
+
+    - Name: ipv6
+      Summary: IPv6 support for iptables
+      Group: System/Base
+      Description: |
+          The iptables package contains IPv6 (the next version of the IP
+          protocol) support for iptables. Iptables controls the Linux kernel
+          network packet filtering code, allowing you to set up firewalls and IP
+          masquerading. 
+          
+          Install iptables-ipv6 if you need to set up firewalling for your
+          network and you are using ipv6.
+

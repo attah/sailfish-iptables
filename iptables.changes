@@ -1,3 +1,9 @@
+* Fri Apr 20 2012 Marko Saukko <sage@merproject.org> - 1.4.13
+- Updated to version 1.4.13
+- Dropped upstreamed patch iptables-1.4.11-cloexec.patch
+- Added .yaml
+- Dropped obsolete conflict to kernel < 2.4.20.
+
 * Mon Mar 19 2012 Marko Saukko <marko.saukko@gmail.com> - 1.4.12.2
 - MER#228: Update iptables to 1.4.12.2 version.
 
