@@ -1,6 +1,6 @@
 Name: iptables
 Summary: Tools for managing Linux kernel packet filtering capabilities
-Version: 1.4.13
+Version: 1.4.15
 Release: 1
 Group: System/Base
 License: GPLv2

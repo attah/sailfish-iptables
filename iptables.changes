@@ -1,3 +1,7 @@
+* Mon Oct 01 2012 Marko Saukko <marko.saukko@jollamobile.com> - 1.4.15
+- Update to version 1.4.15
+- Contributing to MER#174 by moving libs to /usr/lib
+
 * Fri Apr 20 2012 Marko Saukko <sage@merproject.org> - 1.4.13
 - Updated to version 1.4.13
 - Dropped upstreamed patch iptables-1.4.11-cloexec.patch
