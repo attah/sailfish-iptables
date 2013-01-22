@@ -63,7 +63,7 @@ network and you are using ipv6.
 
 %build
 # >> build pre
-CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing" ./configure --enable-devel --enable-libipq --prefix=%{_prefix} --bindir=/bin --sbindir=/sbin --with-kernel=/usr --with-kbuild=/usr --with-ksource=/usr
+CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing" ./configure --enable-devel --prefix=%{_prefix} --bindir=/bin --sbindir=/sbin --with-kernel=/usr --with-kbuild=/usr --with-ksource=/usr
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 # << build pre
@@ -119,7 +119,6 @@ install -c -m 755 ip6tables-config %{buildroot}/etc/sysconfig/ip6tables-config
 %{_libdir}/xtables/libipt*
 %{_libdir}/xtables/libxt*
 %{_libdir}/libip*tc.so.*
-%{_libdir}/libipq.so.*
 %{_libdir}/libxtables.so.*
 # << files
 
@@ -133,11 +132,8 @@ install -c -m 755 ip6tables-config %{buildroot}/etc/sysconfig/ip6tables-config
 %{_includedir}/libiptc/*.h
 %dir %{_includedir}/libipulog
 %{_includedir}/libipulog/*.h
-%{_mandir}/man3/*
 %{_libdir}/libip*tc.so
-%{_libdir}/libipq.so
 %{_libdir}/libxtables.so
-%{_libdir}/pkgconfig/libipq.pc
 %{_libdir}/pkgconfig/libiptc.pc
 %{_libdir}/pkgconfig/libip4tc.pc
 %{_libdir}/pkgconfig/libip6tc.pc
