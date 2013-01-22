@@ -137,9 +137,6 @@ install -c -m 755 ip6tables-config %{buildroot}/etc/sysconfig/ip6tables-config
 %{_libdir}/libip*tc.so
 %{_libdir}/libipq.so
 %{_libdir}/libxtables.so
-%{_libdir}/libip*tc.so
-%{_libdir}/libipq.so
-%{_libdir}/libxtables.so
 %{_libdir}/pkgconfig/libipq.pc
 %{_libdir}/pkgconfig/libiptc.pc
 %{_libdir}/pkgconfig/libip4tc.pc

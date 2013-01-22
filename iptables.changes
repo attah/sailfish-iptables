@@ -1,3 +1,6 @@
+* Tue Jan 22 2013 Oleg Girko <ol+mer@infoserver.ru> - 1.4.15
+- Remove duplicate file entries for devel subpackage.
+
 * Mon Oct 01 2012 Marko Saukko <marko.saukko@jollamobile.com> - 1.4.15
 - Update to version 1.4.15
 - Contributing to MER#174 by moving libs to /usr/lib
