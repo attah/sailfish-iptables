@@ -1,0 +1,149 @@
+From a44d9ce84eab7bdb0f35c63b847247b1c217868a Mon Sep 17 00:00:00 2001
+From: Jussi Laakkonen <jussi.laakkonen@jolla.com>
+Date: Mon, 7 Jan 2019 17:35:28 +0200
+Subject: [PATCH] xtables: Improve extension handle management, unload if
+ afinfo changes.
+
+This commit adds a simple storage for loaded extension handles. The
+storage can hold 128 handles (there are 122 extensions as total).
+Both matches and targets that are loaded from extensions have their
+handles stored.
+
+When the address family is changed, all handles are closed with
+dlclose(). Also the linked lists (xtables_pending_matches,
+xtables_matches, xtables_pending_targets and xtables_targets are set to
+NULL as the extensions registered to these have been unloaded.
+
+This procedure solves the issue of not being able to add both IPv4 and
+IPv6 rules within the same session from one program using xtables
+library and socket options using ipt_replace/ip6t_replace. The reason
+for this change is that _init() of the extension is only called when it
+is loaded for the first time and for subsequent loads with dlopen() it
+_init() is not executed.
+
+Without this fix it results in a situation where IPv6 rules are added
+first, the pending matches are loaded first and the library, e.g.,
+multiport, is loaded with dlopen() and _init() registers the pending
+matches for IPv6 family. When IPv4 rules are to be added from within the
+same session after initializing with xtables_init_all() with new, changed
+IP family, there is no match found for multiport as there are no pending
+matches registered since call to _init() is not executed at shared library
+load.
+
+By unloading the extensions and nullifying the linked lists such
+applications can add both IPv4 and IPv6 rules from within same session.
+---
+ libxtables/xtables.c | 74 ++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 72 insertions(+), 2 deletions(-)
+
+diff --git a/libxtables/xtables.c b/libxtables/xtables.c
+index d43f9706..8b5819ef 100644
+--- a/libxtables/xtables.c
++++ b/libxtables/xtables.c
+@@ -181,7 +181,7 @@ static const struct xtables_afinfo afinfo_arp = {
+ 	.family        = NFPROTO_ARP,
+ };
+ 
+-const struct xtables_afinfo *afinfo;
++const struct xtables_afinfo *afinfo = NULL;
+ 
+ /* Search path for Xtables .so files */
+ static const char *xtables_libdir;
+@@ -228,8 +228,54 @@ void xtables_init(void)
+ 	xtables_libdir = XTABLES_LIBDIR;
+ }
+ 
++#ifndef NO_SHARED_LIBS
++
++/* 128 is sufficient as there are 122 extensions shipped with iptables */
++#define XTABLES_DL_HANDLES_MAX 128
++
++static int handlecount = 0;
++static void *handles[XTABLES_DL_HANDLES_MAX] = {0};
++
++static int add_handle(void *handle)
++{
++	if (!handle)
++		return -1;
++
++	handles[handlecount++] = handle;
++
++	return 0;
++}
++
++static void cleanup_handles(void)
++{
++	while (handlecount > 0) {
++		handlecount--;
++
++		if (handles[handlecount]) {
++			if (dlclose(handles[handlecount]))
++				fprintf(stderr, "Couldn't unload handle: %s",
++							dlerror());
++
++			handles[handlecount] = NULL;
++		}
++	}
++}
++
++static void unset_matches_and_targets(void)
++{
++	xtables_matches = NULL;
++	xtables_targets = NULL;
++	xtables_pending_matches = NULL;
++	xtables_pending_targets = NULL;
++}
++#endif // NO_SHARED_LIBS
++
+ void xtables_set_nfproto(uint8_t nfproto)
+ {
++#ifndef NO_SHARED_LIBS
++	struct xtables_afinfo *afinfo_old = afinfo;
++#endif
++
+ 	switch (nfproto) {
+ 	case NFPROTO_IPV4:
+ 		afinfo = &afinfo_ipv4;
+@@ -247,6 +293,21 @@ void xtables_set_nfproto(uint8_t nfproto)
+ 		fprintf(stderr, "libxtables: unhandled NFPROTO in %s\n",
+ 		        __func__);
+ 	}
++
++#ifndef NO_SHARED_LIBS
++	/*
++	 * If afinfo was set and differs with the new afinfo, the loaded
++	 * extensions have to be unloaded as they were loaded with different
++	 * address family info. Thus, the _init() of the extension would not be
++	 * executed for the second time the extension is loaded with dlopen().
++	 * Also unset the matches, targets, pending matches and pending targets
++	 * when the extensions have been unloaded.
++	 */
++	if (afinfo_old && afinfo_old != afinfo) {
++		cleanup_handles();
++		unset_matches_and_targets();
++	}
++#endif
+ }
+ 
+ /**
+@@ -579,7 +640,16 @@ static void *load_extension(const char *search_path, const char *af_prefix,
+ 					strerror(errno));
+ 				return NULL;
+ 			}
+-			if (dlopen(path, RTLD_NOW) == NULL) {
++
++			/* This should not ever happen */
++			if (handlecount == XTABLES_DL_HANDLES_MAX) {
++				fprintf(stderr, "max amount of loadable "
++					"extensions reached (%d)\n",
++					handlecount);
++				return NULL;
++			}
++
++			if (add_handle(dlopen(path, RTLD_NOW))) {
+ 				fprintf(stderr, "%s: %s\n", path, dlerror());
+ 				break;
+ 			}
+-- 
+2.19.2
+
