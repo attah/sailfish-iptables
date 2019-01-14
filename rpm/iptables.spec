@@ -7,6 +7,7 @@ License:    GPLv2
 URL:        http://www.netfilter.org/
 Source0:    http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
 Source1:    iptables-config
+Patch0:     0001-xtables-Improve-extension-handle-management-unload-i.patch
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  kernel-headers
@@ -45,6 +46,7 @@ network and you are using ipv6.
 
 %prep
 %setup -q -n %{name}-%{version}/%{name}
+%patch0 -p1 
 
 %build
 ./autogen.sh
