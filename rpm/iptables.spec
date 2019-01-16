@@ -44,6 +44,16 @@ masquerading.
 Install iptables-ipv6 if you need to set up firewalling for your
 network and you are using ipv6.
 
+
+%package doc
+Summary:   Documentation for %{name}
+Group:     Documentation
+Requires:  %{name} = %{version}-%{release}
+
+%description doc
+Man pages for %{name}.
+
+
 %prep
 %setup -q -n %{name}-%{version}/%{name}
 %patch0 -p1 
@@ -54,7 +64,7 @@ CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing" ./configure --enable-devel --prefix
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
-make %{?jobs:-j%jobs}
+make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -78,6 +88,9 @@ install -c -m 755 %{SOURCE1} %{buildroot}/etc/sysconfig/iptables-config
 sed -e 's;iptables;ip6tables;g' -e 's;IPTABLES;IP6TABLES;g' < %{SOURCE1} > ip6tables-config
 install -c -m 755 ip6tables-config %{buildroot}/etc/sysconfig/ip6tables-config
 
+mkdir -p %{buildroot}%{_docdir}/%{name}-%{version}
+install -m0644 -t %{buildroot}%{_docdir}/%{name}-%{version} INCOMPATIBILITIES
+
 
 %post -p /sbin/ldconfig
 
@@ -85,13 +98,11 @@ install -c -m 755 ip6tables-config %{buildroot}/etc/sysconfig/ip6tables-config
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING INCOMPATIBILITIES
+%license COPYING
 %config(noreplace) %attr(0600,root,root) /etc/sysconfig/iptables-config
 /sbin/iptables*
 /sbin/xtables-multi
 /bin/iptables-xml
-%{_mandir}/man1/iptables*
-%{_mandir}/man8/iptables*
 %dir %{_libdir}/xtables
 %{_libdir}/xtables/libipt*
 %{_libdir}/xtables/libxt*
@@ -119,5 +130,10 @@ install -c -m 755 ip6tables-config %{buildroot}/etc/sysconfig/ip6tables-config
 %defattr(-,root,root,-)
 %config(noreplace) %attr(0600,root,root) /etc/sysconfig/ip6tables-config
 /sbin/ip6tables*
-%{_mandir}/man8/ip6tables*
 %{_libdir}/xtables/libip6t*
+
+%files doc
+%defattr(-,root,root,-)
+%{_mandir}/man*/%{name}*
+%{_mandir}/man8/ip6tables*
+%{_docdir}/%{name}-%{version}
