@@ -1,16 +1,16 @@
 Name:       iptables
 Summary:    Tools for managing Linux kernel packet filtering capabilities
-Version:    1.6.1
+Version:    1.8.2
 Release:    1
 Group:      System/Base
 License:    GPLv2
 URL:        http://www.netfilter.org/
 Source0:    http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
 Source1:    iptables-config
-Patch0:     0001-xtables-Improve-extension-handle-management-unload-i.patch
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  kernel-headers
+BuildRequires:  autoconf, automake, libtool
 
 %description
 The iptables utility controls the network packet filtering code in the
@@ -56,7 +56,6 @@ Man pages for %{name}.
 
 %prep
 %setup -q -n %{name}-%{version}/%{name}
-%patch0 -p1 
 
 %build
 ./autogen.sh
@@ -101,12 +100,11 @@ install -m0644 -t %{buildroot}%{_docdir}/%{name}-%{version} INCOMPATIBILITIES
 %license COPYING
 %config(noreplace) %attr(0600,root,root) /etc/sysconfig/iptables-config
 /sbin/iptables*
-/sbin/xtables-multi
+/sbin/xtables-legacy-multi
 /bin/iptables-xml
 %dir %{_libdir}/xtables
 %{_libdir}/xtables/libipt*
 %{_libdir}/xtables/libxt*
-%{_libdir}/xtables/libebt_*.so
 %{_libdir}/libip*tc.so.*
 %{_libdir}/libxtables.so.*
 
@@ -136,4 +134,8 @@ install -m0644 -t %{buildroot}%{_docdir}/%{name}-%{version} INCOMPATIBILITIES
 %defattr(-,root,root,-)
 %{_mandir}/man*/%{name}*
 %{_mandir}/man8/ip6tables*
+%{_mandir}/man8/xtables-legacy.*
+%exclude %{_mandir}/man8/xtables-monitor.*
+%exclude %{_mandir}/man8/xtables-nft.*
+%exclude %{_mandir}/man8/xtables-translate.*
 %{_docdir}/%{name}-%{version}
