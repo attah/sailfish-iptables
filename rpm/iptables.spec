@@ -98,7 +98,7 @@ install -m0644 -t %{buildroot}%{_docdir}/%{name}-%{version} INCOMPATIBILITIES
 %files
 %defattr(-,root,root,-)
 %license COPYING
-%config(noreplace) %attr(0600,root,root) /etc/sysconfig/iptables-config
+%config %attr(0600,root,root) /etc/sysconfig/iptables-config
 /sbin/iptables*
 /sbin/xtables-legacy-multi
 /bin/iptables-xml
@@ -126,7 +126,7 @@ install -m0644 -t %{buildroot}%{_docdir}/%{name}-%{version} INCOMPATIBILITIES
 
 %files ipv6
 %defattr(-,root,root,-)
-%config(noreplace) %attr(0600,root,root) /etc/sysconfig/ip6tables-config
+%config %attr(0600,root,root) /etc/sysconfig/ip6tables-config
 /sbin/ip6tables*
 %{_libdir}/xtables/libip6t*
 
