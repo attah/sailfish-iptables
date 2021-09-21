@@ -1,11 +1,10 @@
 Name:       iptables
 Summary:    Tools for managing Linux kernel packet filtering capabilities
-Version:    1.8.2
+Version:    1.8.7
 Release:    1
-Group:      System/Base
 License:    GPLv2
-URL:        http://www.netfilter.org/
-Source0:    http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
+URL:        http://www.netfilter.org/projects/iptables
+Source0:    %{name}-%{version}.tar.bz2
 Source1:    iptables-config
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -20,7 +19,6 @@ you should install this package.
 
 %package devel
 Summary:    Development package for iptables
-Group:      System/Base
 Requires:   %{name} = %{version}-%{release}
 
 %description devel
@@ -32,7 +30,6 @@ stable and may change with every new version. It is therefore unsupported.
 
 %package ipv6
 Summary:    IPv6 support for iptables
-Group:      System/Base
 Requires:   %{name} = %{version}-%{release}
 
 %description ipv6
@@ -47,30 +44,37 @@ network and you are using ipv6.
 
 %package doc
 Summary:   Documentation for %{name}
-Group:     Documentation
 Requires:  %{name} = %{version}-%{release}
+BuildArch: noarch
 
 %description doc
 Man pages for %{name}.
 
 
 %prep
-%setup -q -n %{name}-%{version}/%{name}
+%autosetup -p1 -n %{name}-%{version}/%{name}
 
 %build
 ./autogen.sh
-CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing" ./configure --enable-devel --prefix=%{_prefix} --bindir=/bin --sbindir=/sbin --with-kernel=/usr --with-kbuild=/usr --with-ksource=/usr --disable-nftables --libdir=%{_libdir} --with-xtlibdir=%{_libdir}/xtables
+CFLAGS="$RPM_OPT_FLAGS -fno-strict-aliasing" \
+%configure --enable-devel \
+    --prefix=%{_prefix} \
+    --bindir=/bin \
+    --sbindir=/sbin \
+    --with-kernel=/usr \
+    --with-kbuild=/usr \
+    --with-ksource=/usr \
+    --disable-nftables \
+    --libdir=%{_libdir} \
+    --with-xtlibdir=%{_libdir}/xtables
+
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
-make %{?_smp_mflags}
+%make_build
 
 %install
-rm -rf %{buildroot}
 %make_install
-
-# remove la file(s)
-rm -f %{buildroot}/%{_lib}/*.la
 
 # install ip*tables.h header files
 install -m 644 include/ip*tables.h %{buildroot}%{_includedir}/
@@ -134,8 +138,4 @@ install -m0644 -t %{buildroot}%{_docdir}/%{name}-%{version} INCOMPATIBILITIES
 %defattr(-,root,root,-)
 %{_mandir}/man*/%{name}*
 %{_mandir}/man8/ip6tables*
-%{_mandir}/man8/xtables-legacy.*
-%exclude %{_mandir}/man8/xtables-monitor.*
-%exclude %{_mandir}/man8/xtables-nft.*
-%exclude %{_mandir}/man8/xtables-translate.*
 %{_docdir}/%{name}-%{version}
