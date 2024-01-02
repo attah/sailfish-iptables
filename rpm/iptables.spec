@@ -1,6 +1,6 @@
 Name:       iptables
 Summary:    Tools for managing Linux kernel packet filtering capabilities
-Version:    1.8.7
+Version:    1.8.10
 Release:    1
 License:    GPLv2
 URL:        http://www.netfilter.org/projects/iptables
@@ -24,7 +24,7 @@ Requires:   %{name} = %{version}-%{release}
 %description devel
 iptables development headers and libraries.
 
-The iptc interface is upstream marked as not public. The interface is not 
+The iptc interface is upstream marked as not public. The interface is not
 stable and may change with every new version. It is therefore unsupported.
 
 
@@ -36,7 +36,7 @@ Requires:   %{name} = %{version}-%{release}
 The iptables package contains IPv6 (the next version of the IP
 protocol) support for iptables. Iptables controls the Linux kernel
 network packet filtering code, allowing you to set up firewalls and IP
-masquerading. 
+masquerading.
 
 Install iptables-ipv6 if you need to set up firewalling for your
 network and you are using ipv6.
@@ -81,18 +81,11 @@ install -m 644 include/ip*tables.h %{buildroot}%{_includedir}/
 install -d -m 755 %{buildroot}%{_includedir}/iptables
 install -m 644 include/iptables/internal.h %{buildroot}%{_includedir}/iptables/
 
-# install ipulog header file
-install -d -m 755 %{buildroot}%{_includedir}/libipulog/
-install -m 644 include/libipulog/*.h %{buildroot}%{_includedir}/libipulog/
-
 # install init scripts and configuration files
 install -d -m 755 %{buildroot}/etc/sysconfig
 install -c -m 755 %{SOURCE1} %{buildroot}/etc/sysconfig/iptables-config
 sed -e 's;iptables;ip6tables;g' -e 's;IPTABLES;IP6TABLES;g' < %{SOURCE1} > ip6tables-config
 install -c -m 755 ip6tables-config %{buildroot}/etc/sysconfig/ip6tables-config
-
-mkdir -p %{buildroot}%{_docdir}/%{name}-%{version}
-install -m0644 -t %{buildroot}%{_docdir}/%{name}-%{version} INCOMPATIBILITIES
 
 
 %post -p /sbin/ldconfig
@@ -119,8 +112,6 @@ install -m0644 -t %{buildroot}%{_docdir}/%{name}-%{version} INCOMPATIBILITIES
 %{_includedir}/*.h
 %dir %{_includedir}/libiptc
 %{_includedir}/libiptc/*.h
-%dir %{_includedir}/libipulog
-%{_includedir}/libipulog/*.h
 %{_libdir}/libip*tc.so
 %{_libdir}/libxtables.so
 %{_libdir}/pkgconfig/libiptc.pc
@@ -138,4 +129,4 @@ install -m0644 -t %{buildroot}%{_docdir}/%{name}-%{version} INCOMPATIBILITIES
 %defattr(-,root,root,-)
 %{_mandir}/man*/%{name}*
 %{_mandir}/man8/ip6tables*
-%{_docdir}/%{name}-%{version}
+%{_datadir}/xtables/iptables.xslt
